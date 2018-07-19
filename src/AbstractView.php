@@ -1,34 +1,47 @@
 <?php
-namespace Jiny\Views;
+namespace Jiny\View;
 
 use \Jiny\Core\Registry\Registry;
 
 class AbstractView
 {
     public $view_file;
-    public $view_data = [];
+    public $_data = [];
     
 
     // 인스턴스
     protected $conf;
     protected $Config;
-    
 
     // 뷰 설정
-    public function setViewFile($file)
+    public function setFile($file)
     {
         // \TimeLog::set(__METHOD__);
-
         $this->view_file = $file;
     }
 
-    public function setViewData($data)
+    /**
+     * 뷰로 전달되는 데이터를 초기화 합니다.
+     */
+    public function setData($data)
     {
         // \TimeLog::set(__METHOD__);
+   
         if(isset($data)) {
-            $this->view_data = $data;
+            $this->_data = $data;
+        }
+
+        // 설정파일을 뷰데이터에 결합합니다.
+        //$cfgData = $this->Config->data();
+        $cfgData = conf();
+        foreach ($cfgData as $key => $value) {
+            $this->_data[$key] = $value;
+        }
+
+        // 현재 url
+        if ($this->_data['url'] = $this->App->Boot->urlString()) {
         } else {
-            $this->view_data = [];
+            $this->_data['url'] = "/";
         }
     }
 
@@ -39,25 +52,25 @@ class AbstractView
     {
     
         foreach ($arr as $k => $value) {
-            $this->view_data[$key][$k] = $value;
+            $this->_data[$key][$k] = $value;
         } 
-       
     }
 
 
 
+/*
     public function mergeViewData($arr)
     {
         // \TimeLog::set(__METHOD__);
 
         //echo __METHOD__."를 호출합니다.<br>";
-        if (\is_array($this->view_data)){
+        if (\is_array($this->_data)){
             //echo "배열을 병합합니다.<br>";
             //print_r($arr);
-            array_merge($this->view_data, $arr);
+            array_merge($this->_data, $arr);
             //echo "<br><br>";
         } else {
-            $this->view_data = $data; 
+            $this->_data = $data; 
         }        
     }
 
@@ -65,8 +78,9 @@ class AbstractView
     {
         // \TimeLog::set(__METHOD__);
 
-        return $this->view_data;
+        return $this->_data;
     }
+    */
 
 
 

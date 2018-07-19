@@ -1,6 +1,6 @@
 <?php
 
-namespace Jiny\Views;
+namespace Jiny\View;
 
 use \Jiny\Core\Registry\Registry;
 /**
@@ -51,7 +51,7 @@ trait FrontMatter
      */
     public function isDataFile()
     {
-        $path = ROOT.$this->conf->data('ENV.path.view');
+        $path = ROOT.conf('ENV.path.view');
         $dataYMAL = $path. DS. $this->view_file."index.yml";
         if (file_exists($dataYMAL)){
             $str = file_get_contents($dataYMAL);         

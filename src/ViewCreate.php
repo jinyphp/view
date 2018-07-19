@@ -1,6 +1,6 @@
 <?php
 
-namespace Jiny\Views;
+namespace Jiny\View;
 
 use \Jiny\Core\Registry\Registry;
 
@@ -27,8 +27,9 @@ trait ViewCreate
      */
     public function create($viewName, $data=[])
     {
-        \TimeLog::set(__METHOD__);
-
+    
+        //echo $viewName."<br>";
+        
         // 리소스 뷰파일을 읽어 옵니다.
         if ($body = $this->loadViewFile($viewName)) {
 
@@ -41,8 +42,8 @@ trait ViewCreate
             $this->convert($this->_pageType);
 
             // 컨트롤러에서 넘어온 content 결합
-            if ( isset($this->view_data['datas']['content']) )
-            $this->_body = str_replace("{{ content }}",  $this->view_data['datas']['content'], $this->_body);
+            if ( isset($this->_data['datas']['content']) )
+            $this->_body = str_replace("{{ content }}",  $this->_data['datas']['content'], $this->_body);
            
             
 
@@ -59,9 +60,9 @@ trait ViewCreate
                 $this->imagesCopy();
 
                 // 케쉬를 생성 저장합니다.
-                if (isset($this->view_data['page'])) {
+                if (isset($this->_data['page'])) {
                     $filename = $this->tempPath();
-                    $yaml = \Jiny\Config\Yaml\Yaml::dump($this->view_data['page']);
+                    $yaml = \Jiny\Config\Yaml\Yaml::dump($this->_data['page']);
                     file_put_contents($filename, "---\n".$yaml."\n---\n".$this->_body);
                 }
             }
@@ -71,6 +72,7 @@ trait ViewCreate
         } else {
             // 페이지를 읽을 수 없습니다.
             // NULL
+            
             return NULL;
         }         
     }
@@ -82,20 +84,20 @@ trait ViewCreate
     public function extendLayout()
     {
         // 레아아웃 설정이 있는지를 확인합니다.
-        if (isset($this->view_data['page']['layout'])) {
+        if (isset($this->_data['page']['layout'])) {
 
             // 테마에서 레이아웃을 읽어 옵니다.
-            $body = $this->viewLayout( $this->view_data['page']['layout'] );
+            $body = $this->viewLayout( $this->_data['page']['layout'] );
             if ($body) {
                 // 재귀호출 방지를 위해서 삭제합니다.
-                unset($this->view_data['page']['layout']);
+                unset($this->_data['page']['layout']);
 
                 // 레이아웃의 머리말을 분리합니다.
                 $layout = $this->frontMatter($body);
                 $this->_body = str_replace("{{ content }}", $this->_body, $layout);
 
                 // 재확장 여부 검사.
-                if (isset($this->view_data['page']['layout'])) {
+                if (isset($this->_data['page']['layout'])) {
                     $this->extendLayout();
                 }
                 
@@ -110,7 +112,7 @@ trait ViewCreate
      */
     public function viewLayout($name)
     {
-        $layout = $this->App->Config->data("ENV.path.layout");
+        $layout = conf("ENV.path.layout");
         $path = ROOT.DS.$layout.DS;
         $filename = $name.".htm";
         if (file_exists($path.$filename)) {

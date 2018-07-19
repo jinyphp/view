@@ -1,6 +1,6 @@
 <?php
 
-namespace Jiny\Views;
+namespace Jiny\View;
 
 use \Jiny\Core\Registry\Registry;
 use Sunra\PhpSimple\HtmlDomParser;
@@ -26,31 +26,26 @@ class ViewFile extends AbstractView
     protected $_isUpdate = false;
 
     
+    
     /**
      * 뷰(view) 파일을 읽어옵니다.
      */
     public function loadViewFile($viewName)
-    {
-        // \TimeLog::set(__METHOD__);
-
+    {     
         // 리소스 경로를 확인합니다.
-        $path = $this->resourcePath();
-        //echo "리소스 = ".$path."<br>";
+        $path = ROOT.str_replace("/", DIRECTORY_SEPARATOR, conf("ENV.path.pages"));
+        
         // 파일명을 확인합니다.
         $filename = $this->fileCheck($path, $viewName);
-        //echo "파일명 = ".$filename."<br>";
-
+        //echo "파일명 = ".$filename;
         if ($filename) {
 
-            // 환경설정
-            // 템플릿 캐쉬가 활성화 된경우에만 처리합니다.
-            if ($this->conf->data('ENV.Tamplate.Cache')) {
-
+            // 템플릿 캐쉬가 활성화 된경우, 캐쉬파일을 확인합니다.
+            if (conf("ENV.Tamplate.Cache")) {
                 // 원본 파일이 수정되었는지 확인
                 if($this->isFileUpdate($filename)){
                     $filename = $this->tempPath();          
                 }
-
             }
              
             return $this->getFile($filename);
@@ -65,21 +60,27 @@ class ViewFile extends AbstractView
     /**
      * 뷰파일을 읽어올 경로를 확인합니다.
      */
-    public function resourcePath()
+    /*
+    public $_path = NULL;
+
+    public function path()
     {
         // 환경설정 경로를 확인합니다.
-        $path = $this->conf->data('ENV.path.pages');
+        if($this->_path){
+            return $this->_path;
+        } else {
+            // directory 구분자를 변경처리 합니다.
+            $path = str_replace("/", DIRECTORY_SEPARATOR, conf("ENV.path.pages"));
 
-        // OS 대등을 위하여
-        // directory 구분자를 변경처리 합니다.
-        $path = str_replace("/", DIRECTORY_SEPARATOR, $path);
+            // 시작 위치의 포인터를 설정합니다.
+            // 프로퍼티에 저장을 합니다.
+            $this->_filepath = ROOT.$path;
 
-        // 시작 위치의 포인터를 설정합니다.
-        // 프로퍼티에 저장을 합니다.
-        $this->_filepath = ROOT.$path;
-
-        return $this->_filepath;
+            return $this->_filepath;
+        }
+        
     }
+    */
 
     /**
      * URL에 대한 파일명을 확인합니다.
@@ -88,31 +89,31 @@ class ViewFile extends AbstractView
     {
         // Indexs
         // 우선순위 설정으로 반복 검색을 합니다.
-        $indexs = $this->Config->data("ENV.Resource.Indexs");
-        
-        // Indexs를 이용하여 확장자 우선순위를
-        // 배열로 생성합니다.
-        $exts = $this->getExts($indexs); 
-        
-        // --- 
-        //echo $path.$viewFile."<br>";
-
+        $indexs = conf("ENV.Resource.Indexs");     
+    
         // 입력한 URL에 해당하는 index 파일이 있는지를 검사합니다.
         // index 파일은 모든 조건에서 우선 처리됩니다.
+        //echo "인덱스 = ".$path.$viewFile."<br>";
         if ($name = $this->isIndex($path.$viewFile, $indexs)) {
-            //echo "index<br>"; 
+            //echo "인덱스 이름을 찾습니다...<br>";
             $this->_viewDir = $path;       
             return $name;
         }
         // index 파일이 없는 경우, 폴더명을 파일로 변환처리하여 이름을 찾습니다.
         else {
-            //echo "dirfile<br>";
-            $filepath = $path.DS;
-            $dd = \explode(DS, \trim($viewFile, DS) );
-  
+            
+            // Indexs를 이용하여 확장자 우선순위를
+            // 배열로 생성합니다.
+            $exts = $this->getExts($indexs); 
+
+            // 기본 패스서 부터 파일명 찾기
+            $filepath = $path.DS;   
+            //echo  $filepath;
+            $dd = \explode(DS, \trim($viewFile, DS) );  
             foreach ($dd as $value) {
                 $filepath .= $value;
-                //echo $value."<br>";
+                //echo  $filepath."<br>";
+
                 if(is_dir($filepath)){
                     // 디렉토리인 경우 다음 경로를 찾습니다.
                     $filepath .= DS;
@@ -126,7 +127,9 @@ class ViewFile extends AbstractView
 
             // loop로 생성된 마지막 구분자를 제거해 줍니다.
             $filepath = \rtrim($filepath, "_");
-            
+            $filepath = \rtrim($filepath, DS);
+            //echo  $filepath."<br>";
+
             // 디렉토리명과 매칭된 파일이 있는 경우
             // 해당 파일로 정의합니다.
             if ($name = $this->isExt($filepath, $exts)) return $name;
@@ -139,10 +142,15 @@ class ViewFile extends AbstractView
 
     /**
      * Index 파일이 있는지를 검사합니다.
+     * 지정된 경로에 index 순서를 검사합니다.
      */
-    public function isIndex($path, $indexs)
+    public function isIndex($path, $indexs = [])
     {
+        //echo "인덱스 파일 확인합니다...<br>";
+        $path = rtrim($path,DS).DS;
+        //echo $path."<br>";
         foreach ($indexs as $name) {
+            //echo $path.$name."<br>";
             if (file_exists($path.$name)) {
                 $key = \explode(".", $name);
                 if(isset($key[1])) $this->_pageType = $key[1];
@@ -174,9 +182,7 @@ class ViewFile extends AbstractView
         $exts=[];
         foreach ($indexs as $name) {
             $key = \explode(".", $name);
-            if(isset($key[1])){
-                array_push($exts, $key[1]);
-            }            
+            if (isset($key[1])) array_push($exts, $key[1]);
         }
         return $exts;
     }
@@ -318,7 +324,7 @@ class ViewFile extends AbstractView
                 $info = pathinfo($element->src);
     
                 \Jiny\Core\Base\File::copy($src, ROOT.$dir.DS.$info['basename']);
-                echo $src."==>".ROOT.$dir.DS.$info['basename']."이미지를 복사합니다.<br>";
+                //echo $src."==>".ROOT.$dir.DS.$info['basename']."이미지를 복사합니다.<br>";
 
                 if(ROOT == ".."){
                     $imgSrc = str_replace("\public","",$dir.DS.$info['basename']); 
