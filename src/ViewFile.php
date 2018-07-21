@@ -289,54 +289,85 @@ class ViewFile extends AbstractView
 
     /**
      * 이미지를 복사합니다.
+     * public/_
      */
-    public function imagesCopy()
+    public function imagesCopy($body)
     {
-        //
-        $dom = HtmlDomParser::str_get_html( $this->_body );
+        //캐쉬저장 폴더
+        $baseDir = "/public";
+        $tempDir = "_";
+        $resourcePath = $this->_viewDir;
+        
+        // 문서의 돔을 분석합니다.
+        $dom = HtmlDomParser::str_get_html( $body );
         if($arr = $dom->find('img')){
 
-            $tempDir = "_";
+            // URL에 맞는 폴더를 생성합니다.
             $urlpath = $this->App->Boot->urlString();            
             $urlpath = \Jiny\Core\Base\File::osPath($urlpath);
-            echo "urlpath=".$urlpath."<br>";
+
+            //echo "urlpath=".$urlpath."<br>";
 
             $dir = \Jiny\Core\Base\File::osPath("/public".DS.$tempDir.$urlpath);    
-            \Jiny\Core\Base\File::mkdir($dir);
+            if(!is_dir($dir)){
+                // 디렉토리를 생성합니다.
+                \Jiny\Core\Base\File::mkdir($dir);
+                if(!is_dir($dir)){
+                    //echo "이미지 복사 디렉토리를 생성할 수 없습니다.";
+                }
+            }
             
+            // 돔의 이미지의 갯수많큼 복사합니다.
             foreach($arr as $element){
-                echo $element->src."<br>";
+                //echo "== ".$element->src."<br>";
 
                 if ($element->src[0] == "/") {
                     // 정대경로
                     $src = ROOT.$element->src;
+                    
 
                 } else if ($element->src[0] == ".") {
                     //상대경로
-                    $src = $this->_viewDir.$urlpath.DS.ltrim($element->src,"./");
+                    // $src = $this->_viewDir.$urlpath.DS.ltrim($element->src,"./");
+                    //$src = ltrim($element->src,"./");
+                    $src = \Jiny\Core\Base\Path::append($resourcePath, $element->src);
 
                 } else {
                     // 그외 경로는 스킵합니다.
                     continue;
                 }
 
-                $src = \Jiny\Core\Base\File::osPath($src);                
-                $info = pathinfo($element->src);
-    
-                \Jiny\Core\Base\File::copy($src, ROOT.$dir.DS.$info['basename']);
-                //echo $src."==>".ROOT.$dir.DS.$info['basename']."이미지를 복사합니다.<br>";
+                //echo "원본소스 = ".$src."<br>";
+                if (\file_exists($src)) {
+                    $info = pathinfo($element->src);
+                    $dst = \Jiny\Core\Base\Path::append($dir, $element->src);
+                    if (\Jiny\Core\Base\File::copy($src, ROOT.$dst)) {
+                        //echo $src."==>".ROOT.$dst."이미지를 복사합니다.<br>";
+                    }
+                  
+                    // 문서의 위치 경로를 변경합니다.
+                    if(ROOT == ".."){
+                        $imgSrc = str_replace("\public","", $dst); 
+                        $body = str_replace($element->src, $imgSrc, $body);
+                    } else {
+                        $body = str_replace($element->src, $dst, $body); 
+                    }
 
-                if(ROOT == ".."){
-                    $imgSrc = str_replace("\public","",$dir.DS.$info['basename']); 
-                    $this->_body = str_replace($element->src, $imgSrc, $this->_body);
-                } else {
-                    $this->_body = str_replace($element->src, $dir.DS.$info['basename'], $this->_body); 
                 }
+                //                             
                   
             }           
 
+        }  else {
+            // 문서에 포함된 이미지가 없습니다.
         }
+
+        unset($dom);
+        return $body;
     }
+
+
+
 
     /**
      * 임시파일 경로
@@ -344,13 +375,14 @@ class ViewFile extends AbstractView
     public function tempPath()
     {
         $tempDir = "_";
+        $temFile = "temp.htm";
+
         $urlpath = $this->App->Boot->urlString();
-        $dir = ROOT."/public".DS.$tempDir .$urlpath;
+        $dir = ROOT."/public".DS. $tempDir .$urlpath;
       
         \Jiny\Core\Base\File::mkdir($dir);
-
-        $filename = $dir.DS."temp.htm";        
-        return \Jiny\Core\Base\File::osPath($filename);       
+     
+        return \Jiny\Core\Base\File::osPath($dir.DS.$temFile);       
     }
 
     /**

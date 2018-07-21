@@ -55,9 +55,10 @@ trait ViewCreate
             
 
             // 케쉬 작업을 체크합니다.
-            if(!$this->_isUpdate){            
+            if(!$this->_isUpdate){
+
                 // 이미지복사.           
-                $this->imagesCopy();
+                $this->_body = $this->imagesCopy($this->_body);
 
                 // 케쉬를 생성 저장합니다.
                 if (isset($this->_data['page'])) {
