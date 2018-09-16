@@ -16,8 +16,7 @@ class ViewFile extends AbstractView
     protected $_filepath;
 
     protected $_pageType;
-    protected $DOCX;
-
+ 
     protected $_tempFile;
 
     // 실제 뷰파일이 존재하는 디렉토리
@@ -37,8 +36,7 @@ class ViewFile extends AbstractView
         
         // 파일명을 확인합니다.
         $filename = $this->fileCheck($path, $viewName);
-        //echo "파일명 = ".$filename;
-        if ($filename) {
+         if ($filename) {
 
             // 템플릿 캐쉬가 활성화 된경우, 캐쉬파일을 확인합니다.
             if (conf("ENV.Tamplate.Cache")) {
@@ -58,31 +56,6 @@ class ViewFile extends AbstractView
     }
 
     /**
-     * 뷰파일을 읽어올 경로를 확인합니다.
-     */
-    /*
-    public $_path = NULL;
-
-    public function path()
-    {
-        // 환경설정 경로를 확인합니다.
-        if($this->_path){
-            return $this->_path;
-        } else {
-            // directory 구분자를 변경처리 합니다.
-            $path = str_replace("/", DIRECTORY_SEPARATOR, conf("ENV.path.pages"));
-
-            // 시작 위치의 포인터를 설정합니다.
-            // 프로퍼티에 저장을 합니다.
-            $this->_filepath = ROOT.$path;
-
-            return $this->_filepath;
-        }
-        
-    }
-    */
-
-    /**
      * URL에 대한 파일명을 확인합니다.
      */
     public function fileCheck($path, $viewFile)
@@ -93,10 +66,10 @@ class ViewFile extends AbstractView
     
         // 입력한 URL에 해당하는 index 파일이 있는지를 검사합니다.
         // index 파일은 모든 조건에서 우선 처리됩니다.
-        //echo "인덱스 = ".$path.$viewFile."<br>";
         if ($name = $this->isIndex($path.$viewFile, $indexs)) {
             //echo "인덱스 이름을 찾습니다...<br>";
-            $this->_viewDir = $path;       
+            //$this->_viewDir = $path;       
+            $this->_viewDir = $path.$viewFile; 
             return $name;
         }
         // index 파일이 없는 경우, 폴더명을 파일로 변환처리하여 이름을 찾습니다.
@@ -188,56 +161,17 @@ class ViewFile extends AbstractView
     }
 
 
-    /**
-     * Indexs 순서에 맞에 파일을 읽어옵니다.
-     * .env.php 설정을 참고합니다.
-     */
-    public function viewFile($path)
-    {
-        // \TimeLog::set(__METHOD__);
-        /*
-        $indexs = $this->Config->data("ENV.Resource.Indexs");
-        foreach ($indexs as $name) {
-            if (file_exists($path.$name)) {
-                $arr = \explode(".",$name);
 
-                $this->_pageType = isset($arr[1])? $arr[1]: NULL;
-
-                if ($this->isFileUpdate($path.$name)) {
-                    //echo "원본처리<br>";
-                    if ($this->_pageType == "docx") {
-                        $body = $this->getDocx($path.$name);
-                    } else {
-                        $body = $this->getFile($path.$name);
-                    }
-
-                    $this->tempFile($path.$name, $body);
-                    return $body;
-
-                } else {
-                    //echo "캐쉬로 대체합니다.<br>";
-                    return $this->getFile($path.$name.".tmp");
-                }
-                
-            }
-        }
-        */
-    }
 
     /**
      * 파일 갱신여부 체크
      */
     public function isFileUpdate($name)
     {
-        // echo "캐쉬를 확인합니다.<br>";
-        // echo $name."<br>";
         $origin = filemtime($name);
-        // echo $origin."\n";
         $name = $this->tempPath();
         if (file_exists($name)) {            
             $temp = filemtime($name);
-            //echo "케쉬=".$temp."<br>";
-
             if( $temp > $origin ) {
                 // echo "최신";
                 $this->_isUpdate = true;
@@ -255,24 +189,8 @@ class ViewFile extends AbstractView
     }
 
 
-    /**
-     * 워드 문서를 읽어 옵니다.
-     */
-    public function getDocx($name)
-    {
-        $this->DOCX = new \Docx_reader\Docx_reader();
-        $this->DOCX->setFile($name);
-
-        if(!$this->DOCX->get_errors()) {
-            $html = $this->DOCX->to_html();
-            $plain_text = $this->DOCX->to_plain_text();
-
-            unset($this->DOCX);
-            return $html;
-        } else {
-            // echo implode(', ',$doc->get_errors());
-        }
-    }
+    
+    
 
     /**
      * 파일을 읽어 옵니다.
@@ -280,11 +198,17 @@ class ViewFile extends AbstractView
     public function getFile($name)
     {
         if ($this->_pageType == "docx") {
-            $body = $this->getDocx($name);
+            // 읽어올 문서 형식이 MS-Word일때
+            $obj = new \Jiny\View\Drivers\docx($this->App->Request->_language);
+        } else if ($this->_pageType == "md") {
+            // 읽어올 문서 형식이 markdown일때
+            $obj = new \Jiny\View\Drivers\md($this->App->Request->_language); 
         } else {
-            $body = file_get_contents($name);;
+            // 읽어올 문서 형식이 htm일때
+            $obj = new \Jiny\View\Drivers\htm($this->App->Request->_language);            
         }
-        return $body;
+
+        return $obj->read($name);
     }
 
     /**
@@ -377,9 +301,10 @@ class ViewFile extends AbstractView
         $tempDir = "_";
         $temFile = "temp.htm";
 
-        $urlpath = $this->App->Boot->urlString();
-        $dir = ROOT."/public".DS. $tempDir .$urlpath;
-      
+        $urlpath = $this->App->Request->urlString();
+        $dir = ROOT."/public".DS. $tempDir.$urlpath;
+        //echo $dir."<br>";
+
         \Jiny\Core\Base\File::mkdir($dir);
      
         return \Jiny\Core\Base\File::osPath($dir.DS.$temFile);       

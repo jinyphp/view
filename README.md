@@ -1,1 +1,3 @@
-## JINY Framworks Viewcore
+## jiny Views
+지니PHP 의 MVC패턴의 view를 처리하는 패키지 입니다. 뷰는 컨드롤러에 의해서 호출되며, 컨트롤러에서 작업한 결과물을 화면에 처리하여 http response로 반환을 합니다.
+http response는 반환된 뷰의 화면을 브라우저로 전송하고, 브라우저는 전송받은 데이터를 기준으로 화면을 렌더링 하게 됩니다.

@@ -1,12 +1,21 @@
 <?php
+/*
+ * This file is part of the jinyPHP package.
+ *
+ * (c) hojinlee <infohojin@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 namespace Jiny\View;
 
 use \Jiny\Core\Registry\Registry;
 use Liquid\Template;
 use Symfony\Component\Filesystem\Filesystem;
 
-
-
+/**
+ * 뷰를 처리합니다.
+ */
 class View extends ViewFile 
 {
     public $App;
@@ -29,29 +38,24 @@ class View extends ViewFile
      */
     public function __construct()
     {
-        // \TimeLog::set(__CLASS__."가 생성이 되었습니다.");
         $this->Controller = Registry::get("controller");
-        // $this->App = $this->Controller->getApp();
         $this->App = Registry::get("App");
         
-        // 객체참조 개선을 위해서 임시저장합니다.        
-        //$this->conf = Registry::get("CONFIG");
-        //$this->Config = $this->conf;   
-
         $this->FileSystem = new Filesystem();
     }
 
     /**
-     * 뷰 동작을 처리합니다.
+     * 템플릿 메소드패턴
+     * 복잡한 뷰 동작을 처리합니다.
      */
     public function process($viewName=NULL)
     {
         
-        
-
         if ($this->create($viewName) ) {
-            // 뷰를 출력합니다.          
-            return $this->show($this->_data);            
+            // 뷰를 출력합니다.
+            $viewHtml = new ViewHtml($this->_body, $this->_data);      
+            return $this->show($viewHtml);
+     
         } else {
             // 뷰 화면을 생성하지 못한경우 NULL 반환
             return NULL;

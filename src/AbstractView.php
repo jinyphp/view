@@ -39,7 +39,7 @@ class AbstractView
         }
 
         // 현재 url
-        if ($this->_data['url'] = $this->App->Boot->urlString()) {
+        if ($this->_data['url'] = $this->App->Request->urlString()) {
         } else {
             $this->_data['url'] = "/";
         }
@@ -55,33 +55,6 @@ class AbstractView
             $this->_data[$key][$k] = $value;
         } 
     }
-
-
-
-/*
-    public function mergeViewData($arr)
-    {
-        // \TimeLog::set(__METHOD__);
-
-        //echo __METHOD__."를 호출합니다.<br>";
-        if (\is_array($this->_data)){
-            //echo "배열을 병합합니다.<br>";
-            //print_r($arr);
-            array_merge($this->_data, $arr);
-            //echo "<br><br>";
-        } else {
-            $this->_data = $data; 
-        }        
-    }
-
-    public function getViewData()
-    {
-        // \TimeLog::set(__METHOD__);
-
-        return $this->_data;
-    }
-    */
-
 
 
     /**

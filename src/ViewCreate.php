@@ -26,10 +26,7 @@ trait ViewCreate
      * HTMLS 경로디렉토리
      */
     public function create($viewName, $data=[])
-    {
-    
-        //echo $viewName."<br>";
-        
+    {       
         // 리소스 뷰파일을 읽어 옵니다.
         if ($body = $this->loadViewFile($viewName)) {
 
@@ -72,8 +69,7 @@ trait ViewCreate
 
         } else {
             // 페이지를 읽을 수 없습니다.
-            // NULL
-            
+            // echo $viewName." 파일을 찾을 수 없습니다.<br>";          
             return NULL;
         }         
     }
