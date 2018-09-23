@@ -22,6 +22,19 @@ class htm extends \Jiny\View\Driver
         $this->_lang = $lang;
     }
     
+    public function resource($name)
+    {
+        $body = $this->read($name);
+            
+        $Front = new \Jiny\View\FrontMatter($this);
+        $Front->frontMatter($body);
+        print_r($Front->_data);
+        exit;
+    }
+
+    /**
+     * 리소스 읽기
+     */
     public function read($name)
     {
         if ($this->_lang) {
@@ -32,4 +45,5 @@ class htm extends \Jiny\View\Driver
         }
         return file_get_contents($name);
     }
+
 }

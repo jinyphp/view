@@ -10,39 +10,80 @@ use Symfony\Component\Filesystem\Filesystem;
  * jiny
  * 뷰파일을 읽어 처리를 합니다.
  */
-class ViewFile extends AbstractView 
+class ViewFile  
 {
    
-    protected $_filepath;
+    //protected $_filepath;
 
-    protected $_pageType;
+    public $_pageType;
  
-    protected $_tempFile;
+    // protected $_tempFile;
+    public $_path;
 
     // 실제 뷰파일이 존재하는 디렉토리
     protected $_viewDir;
 
-    protected $_isUpdate = false;
+    public $Cache;
+    public $View;
 
     
+    public function __construct($view)
+    {
+        $this->View = $view;
+
+        // 뷰 리소스의 경로를 초기화 합니다.
+        $this->getPath();
+
+        // 캐쉬 인스턴스 생성
+        $this->Cache = new \Jiny\View\Cache;
+
+    }
+
+    
+    /**
+     * 뷰의 리소스 경로를 확인합니다.
+     */
+    public function getPath()
+    {
+        if ($this->_path = conf("site.view_path")) {
+            // site 설정의 값을 우선 처리합니다.
+        } else {
+            // 기본값는 환경변수 설정값 입니다.
+            $this->_path = conf("ENV.path.pages");
+        }
+
+        // 경로를 운영체제에 맞게 수정합니다.
+        $this->_path = ROOT.str_replace("/", DIRECTORY_SEPARATOR, $this->_path);
+    }
+
+    /**
+     * 뷰의 리소스 경로를 설정합니다.
+     */
+    public function setPath($path)
+    {
+        // 경로를 운영체제에 맞게 수정합니다.
+        $this->_path = ROOT.str_replace("/", DIRECTORY_SEPARATOR, $path);
+    }
+
+
     
     /**
      * 뷰(view) 파일을 읽어옵니다.
      */
-    public function loadViewFile($viewName)
-    {     
+    public function read($viewName)
+    {   
         // 리소스 경로를 확인합니다.
-        $path = ROOT.str_replace("/", DIRECTORY_SEPARATOR, conf("ENV.path.pages"));
-        
+        $path = $this->_path;
+
         // 파일명을 확인합니다.
         $filename = $this->fileCheck($path, $viewName);
-         if ($filename) {
+        if ($filename) {
 
             // 템플릿 캐쉬가 활성화 된경우, 캐쉬파일을 확인합니다.
-            if (conf("ENV.Tamplate.Cache")) {
+            if ($this->Cache->is()) {
                 // 원본 파일이 수정되었는지 확인
-                if($this->isFileUpdate($filename)){
-                    $filename = $this->tempPath();          
+                if($this->Cache->isFileUpdate($filename)){
+                    $filename = $this->Cache->tempPath();          
                 }
             }
              
@@ -101,7 +142,6 @@ class ViewFile extends AbstractView
             // loop로 생성된 마지막 구분자를 제거해 줍니다.
             $filepath = \rtrim($filepath, "_");
             $filepath = \rtrim($filepath, DS);
-            //echo  $filepath."<br>";
 
             // 디렉토리명과 매칭된 파일이 있는 경우
             // 해당 파일로 정의합니다.
@@ -119,11 +159,9 @@ class ViewFile extends AbstractView
      */
     public function isIndex($path, $indexs = [])
     {
-        //echo "인덱스 파일 확인합니다...<br>";
         $path = rtrim($path,DS).DS;
-        //echo $path."<br>";
         foreach ($indexs as $name) {
-            //echo $path.$name."<br>";
+
             if (file_exists($path.$name)) {
                 $key = \explode(".", $name);
                 if(isset($key[1])) $this->_pageType = $key[1];
@@ -161,55 +199,29 @@ class ViewFile extends AbstractView
     }
 
 
-
-
-    /**
-     * 파일 갱신여부 체크
-     */
-    public function isFileUpdate($name)
-    {
-        $origin = filemtime($name);
-        $name = $this->tempPath();
-        if (file_exists($name)) {            
-            $temp = filemtime($name);
-            if( $temp > $origin ) {
-                // echo "최신";
-                $this->_isUpdate = true;
-                
-            } else {
-                // echo "원본갱신";
-                $this->_isUpdate = false;
-               
-            }
-        } else {
-            $this->_isUpdate = false;           
-        }
-
-        return $this->_isUpdate;
-    }
-
-
-    
-    
-
     /**
      * 파일을 읽어 옵니다.
      */
     public function getFile($name)
     {
+        $language = language();
         if ($this->_pageType == "docx") {
             // 읽어올 문서 형식이 MS-Word일때
-            $obj = new \Jiny\View\Drivers\docx($this->App->Request->_language);
+            $obj = new \Jiny\View\Drivers\docx($language);
+            return $obj->read($name);
         } else if ($this->_pageType == "md") {
             // 읽어올 문서 형식이 markdown일때
-            $obj = new \Jiny\View\Drivers\md($this->App->Request->_language); 
+            $obj = new \Jiny\View\Drivers\md($language);
+            return $obj->read($name);
         } else {
             // 읽어올 문서 형식이 htm일때
-            $obj = new \Jiny\View\Drivers\htm($this->App->Request->_language);            
+            $obj = new \Jiny\View\Drivers\htm($language);
+            return $obj->read($name);   
         }
 
-        return $obj->read($name);
+        
     }
+
 
     /**
      * 이미지를 복사합니다.
@@ -230,8 +242,6 @@ class ViewFile extends AbstractView
             $urlpath = $this->App->Boot->urlString();            
             $urlpath = \Jiny\Core\Base\File::osPath($urlpath);
 
-            //echo "urlpath=".$urlpath."<br>";
-
             $dir = \Jiny\Core\Base\File::osPath("/public".DS.$tempDir.$urlpath);    
             if(!is_dir($dir)){
                 // 디렉토리를 생성합니다.
@@ -243,17 +253,13 @@ class ViewFile extends AbstractView
             
             // 돔의 이미지의 갯수많큼 복사합니다.
             foreach($arr as $element){
-                //echo "== ".$element->src."<br>";
 
                 if ($element->src[0] == "/") {
                     // 정대경로
                     $src = ROOT.$element->src;
                     
-
                 } else if ($element->src[0] == ".") {
                     //상대경로
-                    // $src = $this->_viewDir.$urlpath.DS.ltrim($element->src,"./");
-                    //$src = ltrim($element->src,"./");
                     $src = \Jiny\Core\Base\Path::append($resourcePath, $element->src);
 
                 } else {
@@ -261,7 +267,7 @@ class ViewFile extends AbstractView
                     continue;
                 }
 
-                //echo "원본소스 = ".$src."<br>";
+
                 if (\file_exists($src)) {
                     $info = pathinfo($element->src);
                     $dst = \Jiny\Core\Base\Path::append($dir, $element->src);
@@ -290,25 +296,6 @@ class ViewFile extends AbstractView
         return $body;
     }
 
-
-
-
-    /**
-     * 임시파일 경로
-     */
-    public function tempPath()
-    {
-        $tempDir = "_";
-        $temFile = "temp.htm";
-
-        $urlpath = $this->App->Request->urlString();
-        $dir = ROOT."/public".DS. $tempDir.$urlpath;
-        //echo $dir."<br>";
-
-        \Jiny\Core\Base\File::mkdir($dir);
-     
-        return \Jiny\Core\Base\File::osPath($dir.DS.$temFile);       
-    }
 
     /**
      * 

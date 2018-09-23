@@ -7,7 +7,7 @@ if (! function_exists('view')) {
      */
     function view($viewName=Null, $data=[], $path=NULL) {
 
-        $view = Registry::create(\Jiny\View\View::class, "view");
+        $view = Registry::create(\Jiny\View\View::class, "View");
 
         if (func_num_args()) {
             $viewName = str_replace("/", DS, $viewName);

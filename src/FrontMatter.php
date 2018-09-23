@@ -7,34 +7,41 @@ use \Jiny\Core\Registry\Registry;
 /**
  * 본문에서 머리말 데이터를 분리합니다.
  */
-trait FrontMatter
+class FrontMatter
 {
+    public $FM;
+
     /**
-     * 분리합니다.
+     * 초기화
      */
-    public function frontMatter($doc)
+    public function __construct()
+    {
+        $this->FM = Registry::get("FrontMatter");
+    }
+
+    public function parser($doc)
     {
         // 문서의 데이터를 분리합니다.
-        $document = Registry::get("FrontMatter")->parse($doc);
+        $document = $this->FM->parse($doc);
         $datakey = "page";
         
         // 커스텀 view데이터
+        /*      
         if($data = $this->isDataFile()){
             $this->appendViewData($datakey, $data);
         } 
         else {
             // 문서의 데이터를 추가합니다.
-            if ($data=$document->getData()) {
-                $this->appendViewData($datakey, $document->getData());
+            if ($data = $document->getData()) {
+                $this->appendViewData($datakey, $data);
             }            
-        }
-
-        return $document->getContent();
-    }
-
-    public function frontParser($doc)
-    {
-        return Registry::get("FrontMatter")->parse($doc);
+        }*/
+       
+        //return $document->getContent();
+        return [
+            'data' => $document->getData(),
+            'content' => $document->getContent()
+        ];
     }
 
     /**
@@ -43,7 +50,7 @@ trait FrontMatter
     public function isDataFile()
     {
         $path = ROOT.conf('ENV.path.pages');
-       
+      
         $dataYMAL = \Jiny\Core\Base\Path::append($path, $this->view_file);
         if(file_exists($dataYMAL.".yaml")) {
             $str = file_get_contents($dataYMAL.".yaml");
@@ -53,11 +60,8 @@ trait FrontMatter
                 $str = file_get_contents($dataYMAL.DS."index.yaml");
             }
         }
-    
+     
+        
     }
-
-    /**
-     * 
-     */
 
 }
