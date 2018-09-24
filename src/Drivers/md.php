@@ -25,9 +25,9 @@ class md extends \Jiny\View\Driver
     public function read($name)
     {
         if ($this->_lang) {
-            $name = str_replace(".md", ".".$this->_lang.".md", $name);
-            if(file_exists($name)){
-                return file_get_contents($name);
+            $multi = str_replace(".md", ".".$this->_lang.".md", $name);
+            if(file_exists($multi)){
+                return file_get_contents($multi);
             }
         }
         return file_get_contents($name);
