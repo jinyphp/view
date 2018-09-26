@@ -27,4 +27,8 @@ class RenderTemplate extends \Jiny\View\Render
         }
 
     }
+
+    /**
+     * 
+     */
 }

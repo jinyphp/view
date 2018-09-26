@@ -32,6 +32,7 @@ class View extends \Jiny\View\Process
     public $_body;
     public $_data=[];
 
+
     /**
      * 뷰 클래스를 초기화 합니다.
      */
@@ -137,6 +138,7 @@ class View extends \Jiny\View\Process
 
     }
 
+
     /**
      * 뷰 Extends 레이아웃
      * 환경설정에 따라 값을 읽어 옵니다.
@@ -151,6 +153,7 @@ class View extends \Jiny\View\Process
         }
         return NULL;
     }
+
 
     /**
      * >> 상태패턴 적용
@@ -190,7 +193,6 @@ class View extends \Jiny\View\Process
     }
 
 
-
     /**
      * >> 체인패턴
      * 뷰 화면을 출력합니다.
@@ -220,10 +222,6 @@ class View extends \Jiny\View\Process
         return $viewHtml->_body;
     }
 
-    /**
-     * 
-     */
-
     
     /**
      * 뷰 파일을 설정합니다.
@@ -233,6 +231,7 @@ class View extends \Jiny\View\Process
         $this->view_file = $file;
     }
 
+    
     /**
      * 뷰로 전달되는 데이터를 초기화 합니다.
      */

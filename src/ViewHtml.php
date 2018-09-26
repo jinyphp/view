@@ -1,4 +1,12 @@
 <?php
+/*
+ * This file is part of the jinyPHP package.
+ *
+ * (c) hojinlee <infohojin@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 namespace Jiny\View;
 
 /**
@@ -18,6 +26,7 @@ class ViewHtml
         $this->_data = $data;
     }
 
+
     /**
      * 본문을 설정합니다.
      */
@@ -25,6 +34,7 @@ class ViewHtml
     {
         $this->_body = $body;
     }
+
 
     /**
      * 본문을 반환합니다.
@@ -61,6 +71,7 @@ class ViewHtml
         } 
     }
 
+
     /**
      * 코드를 치환합니다.
      */
@@ -68,6 +79,7 @@ class ViewHtml
     {
         $this->_body = str_replace($src, $dst, $this->_body);
     }
+
 
     /**
      * 해더 부분 스트링을 추가합니다.
@@ -77,6 +89,7 @@ class ViewHtml
         $this->_body = str_replace("</head>", $str."</head>", $this->_body);
     }
 
+
     /**
      * 바디 부분 스트링을 추가합니다.
     */
@@ -84,4 +97,8 @@ class ViewHtml
     {
         $this->_body = str_replace("</body>", $str."</body>", $this->_body);
     }
+
+    /**
+     * 
+     */
 }

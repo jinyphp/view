@@ -24,7 +24,7 @@ class RenderJavascript extends \Jiny\View\Render
         }
     }
 
-        /**
+    /**
      * 머리말, 자바스크립트를 확인합니다.
      */
     private function is_javascript($body)
@@ -32,6 +32,7 @@ class RenderJavascript extends \Jiny\View\Render
         return isset($body->_data['page']['javascript']);
     }
 
+    
     /**
      * 커스텀 자바스크립트 문자열을 생성합니다.
      */

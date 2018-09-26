@@ -25,6 +25,7 @@ class RenderCss extends \Jiny\View\Render
         }
     }
 
+    
     /**
      * 머리말, 커스텀 CSS확인
      */
@@ -32,6 +33,7 @@ class RenderCss extends \Jiny\View\Render
     {
         return isset($body->_data['page']['css']);
     }
+
 
     /**
      * 커스텀 스타일시트 문자열을 생성합니다.

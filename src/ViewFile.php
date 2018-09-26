@@ -1,5 +1,12 @@
 <?php
-
+/*
+ * This file is part of the jinyPHP package.
+ *
+ * (c) hojinlee <infohojin@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 namespace Jiny\View;
 
 use \Jiny\Core\Registry\Registry;
@@ -26,7 +33,9 @@ class ViewFile
     public $Cache;
     public $View;
 
-    
+    /**
+     * 
+     */
     public function __construct($view)
     {
         $this->View = $view;
@@ -56,6 +65,7 @@ class ViewFile
         $this->_path = ROOT.str_replace("/", DIRECTORY_SEPARATOR, $this->_path);
     }
 
+
     /**
      * 뷰의 리소스 경로를 설정합니다.
      */
@@ -64,7 +74,6 @@ class ViewFile
         // 경로를 운영체제에 맞게 수정합니다.
         $this->_path = ROOT.str_replace("/", DIRECTORY_SEPARATOR, $path);
     }
-
 
     
     /**
@@ -95,6 +104,7 @@ class ViewFile
             return NULL;        
         }
     }
+
 
     /**
      * URL에 대한 파일명을 확인합니다.
@@ -153,6 +163,7 @@ class ViewFile
         return NULL;
     }
 
+
     /**
      * Index 파일이 있는지를 검사합니다.
      * 지정된 경로에 index 순서를 검사합니다.
@@ -171,6 +182,7 @@ class ViewFile
         return NULL;
     }
 
+
     /**
      * 확장자가 있는지 검사합니다.
      */
@@ -185,6 +197,7 @@ class ViewFile
         return NULL;
     }
 
+    
     /**
      * 확장자를 분리합니다.
      */

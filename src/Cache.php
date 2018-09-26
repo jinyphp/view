@@ -24,6 +24,7 @@ class Cache
         // 캐시 초기화
     }
 
+    
     /**
      * 캐쉬 활성화를 체크합니다.
      */
@@ -32,6 +33,7 @@ class Cache
         return conf("ENV.Tamplate.Cache");
     }
 
+
     /**
      * 갱신여부를 확인합니다.
      */
@@ -39,6 +41,7 @@ class Cache
     {
         return $this->_isUpdate;
     }
+
 
     /**
      * 파일 갱신여부 체크
@@ -66,6 +69,7 @@ class Cache
 
         return $this->_isUpdate;
     }
+
 
     /**
      * 임시파일 경로

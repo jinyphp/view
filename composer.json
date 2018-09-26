@@ -1,8 +1,9 @@
 {
     "name": "jiny/view",
-    "description": "jiny framwork core",
+    "description": "jinyPHP view",
     "keywords": [
-        "jiny",
+        "jinyPHP",
+        "view",
         "framwork"
     ],
     "homepage": "http://jiny.hojin.io",

@@ -21,6 +21,7 @@ class docx extends \Jiny\View\Driver
         //
         $this->_lang = $lang;
     }
+
     
     /**
      * 워드 문서를 읽어 옵니다.
@@ -41,4 +42,8 @@ class docx extends \Jiny\View\Driver
             exit;
         }
     }
+
+    /**
+     * 
+     */
 }

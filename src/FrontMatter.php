@@ -1,5 +1,12 @@
 <?php
-
+/*
+ * This file is part of the jinyPHP package.
+ *
+ * (c) hojinlee <infohojin@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 namespace Jiny\View;
 
 use \Jiny\Core\Registry\Registry;
@@ -44,6 +51,7 @@ class FrontMatter
         ];
     }
 
+
     /**
      * 별도의 파일 데이터가 있는 경우
      */
@@ -60,8 +68,9 @@ class FrontMatter
                 $str = file_get_contents($dataYMAL.DS."index.yaml");
             }
         }
-     
-        
     }
 
+    /**
+     * 
+     */
 }

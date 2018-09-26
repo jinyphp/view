@@ -22,6 +22,10 @@ class htm extends \Jiny\View\Driver
         $this->_lang = $lang;
     }
     
+
+    /**
+     * 
+     */
     public function resource($name)
     {
         $body = $this->read($name);
@@ -31,6 +35,7 @@ class htm extends \Jiny\View\Driver
         print_r($Front->_data);
         exit;
     }
+
 
     /**
      * 리소스 읽기
@@ -46,4 +51,7 @@ class htm extends \Jiny\View\Driver
         return file_get_contents($name);
     }
 
+    /**
+     * 
+     */
 }
