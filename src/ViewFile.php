@@ -252,7 +252,7 @@ class ViewFile
         if($arr = $dom->find('img')){
 
             // URL에 맞는 폴더를 생성합니다.
-            $urlpath = $this->App->Boot->urlString();            
+            $urlpath = urlString();            
             $urlpath = \Jiny\Core\Base\File::osPath($urlpath);
 
             $dir = \Jiny\Core\Base\File::osPath("/public".DS.$tempDir.$urlpath);    
