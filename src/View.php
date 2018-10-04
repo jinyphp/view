@@ -248,7 +248,7 @@ class View extends \Jiny\View\Process
         }
 
         // 현재 url
-        if ($this->_data['url'] = $this->App->Request->urlString()) {
+        if ($this->_data['url'] = urlString()) {
         } else {
             $this->_data['url'] = "/";
         }

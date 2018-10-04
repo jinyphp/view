@@ -12,14 +12,16 @@ namespace Jiny\View\Drivers;
 class docx extends \Jiny\View\Driver
 {
     private $_lang;
+    private $_country;
 
     /**
      * 의존성 주입
      */
-    public function __construct($lang=null)
+    public function __construct($lang=null, $country=null)
     {
         //
         $this->_lang = $lang;
+        $this->_country = $country;
     }
 
     

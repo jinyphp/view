@@ -218,20 +218,20 @@ class ViewFile
     public function getFile($name)
     {
         $language = language();
+        $country = country();
         if ($this->_pageType == "docx") {
             // 읽어올 문서 형식이 MS-Word일때
-            $obj = new \Jiny\View\Drivers\docx($language);
+            $obj = new \Jiny\View\Drivers\docx($language, $country);
             return $obj->read($name);
         } else if ($this->_pageType == "md") {
             // 읽어올 문서 형식이 markdown일때
-            $obj = new \Jiny\View\Drivers\md($language);
+            $obj = new \Jiny\View\Drivers\md($language, $country);
             return $obj->read($name);
         } else {
             // 읽어올 문서 형식이 htm일때
-            $obj = new \Jiny\View\Drivers\htm($language);
+            $obj = new \Jiny\View\Drivers\htm($language, $country);
             return $obj->read($name);   
         }
-
         
     }
 

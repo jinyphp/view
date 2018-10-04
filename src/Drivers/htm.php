@@ -12,14 +12,16 @@ namespace Jiny\View\Drivers;
 class htm extends \Jiny\View\Driver
 {
     private $_lang;
+    private $_country;
 
     /**
      * 의존성 주입
      */
-    public function __construct($lang=null)
+    public function __construct($lang=null, $country=null)
     {
         // 
         $this->_lang = $lang;
+        $this->_country = $country;
     }
     
 
@@ -47,7 +49,13 @@ class htm extends \Jiny\View\Driver
             if(file_exists($multi)){
                 return file_get_contents($multi);
             }
+        } else if ($this->_country) {
+            $multi = str_replace(".htm", ".".$this->_country.".htm", $name);
+            if(file_exists($multi)){
+                return file_get_contents($multi);
+            }
         }
+
         return file_get_contents($name);
     }
 
