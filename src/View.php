@@ -126,7 +126,7 @@ class View extends \Jiny\View\Process
 
                 // 레이아웃의 머리말을 분리합니다.
                 $doc = $this->FrontMatter->parser($body);
-                $html->_body = str_replace("{{ content }}", $html->_body, $doc['content']);
+                $html->_body = str_replace("{{- content -}}", $html->_body, $doc['content']);
 
                 $html->appendViewData("page", $doc['data']);                
 
