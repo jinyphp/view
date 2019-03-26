@@ -238,7 +238,7 @@ class View extends \Jiny\View\Process
     public function setData($data)
     {   
         if(isset($data)) {
-            $this->_data = $data;
+            $this->_data['data'] = $data;
         }
 
         // 설정파일을 뷰데이터에 결합합니다.
