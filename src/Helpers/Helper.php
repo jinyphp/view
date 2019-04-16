@@ -30,3 +30,38 @@ if (! function_exists('view')) {
        
     }
 }
+
+/**
+ * 데이터 기반의 출력뷰
+ */
+if (! function_exists('dataview')) {
+    function dataview()
+    {
+
+    }
+}
+
+/**
+ * 데이터 목록뷰
+ */
+if (! function_exists('listview')) {
+    function listview()
+    {
+
+    }
+}
+
+/**
+ * 폼 입력뷰
+ */
+if (! function_exists('formview')) {
+    function formview()
+    {
+        
+    }
+}
+
+
+
+
+

@@ -24,7 +24,7 @@ class View extends \Jiny\View\Process
     private $Controller;    
     public $FileSystem;
     public $File;
-    public $FrontMatter;
+    // public $FrontMatter;
     public $Template;
 
     // 컨덴츠
@@ -32,6 +32,7 @@ class View extends \Jiny\View\Process
     public $_body;
     public $_data=[];
 
+    const FRONTMATTER = "page";
 
     /**
      * 뷰 클래스를 초기화 합니다.
@@ -45,7 +46,7 @@ class View extends \Jiny\View\Process
 
         $this->File = new ViewFile($this);
 
-        $this->FrontMatter = new FrontMatter;
+        // $this->FrontMatter = new FrontMatter;
     }
 
 
@@ -62,25 +63,14 @@ class View extends \Jiny\View\Process
         // 리소스 뷰파일을 읽어 옵니다.
         if ($body = $this->File->read($viewName)) {
 
-            // 문서에서 머리말을 분리합니다.    
-            $f = $this->FrontMatter->parser($body);
-            $this->_body = $f['content'];
-            $viewHtml->setBody($f['content']);
-
-            $viewHtml->appendViewData("page", $f['data']);
+            // 문서에서 머리말을 분리합니다.
+            $f = \jiny\frontMatter($body);
+            $viewHtml->setContent($f->getContent());
+            $viewHtml->appendViewData(self::FRONTMATTER, $f->getData());
 
             // 문서를 변환합니다.
             // 문서 타입
             $this->convert($this->File->_pageType, $viewHtml);
-
-            
-            // 컨트롤러에서 넘어온 content 결합
-            /*
-            if ( isset($this->_data['datas']['content']) ) {
-                $this->_body = str_replace("{{ content }}",  $this->_data['datas']['content'], $this->_body);
-            }
-            */
-
 
             // 레이아웃 결합
             // 머리말 layout 설정값에 따라서 재귀적으로 결합합니다.
@@ -125,10 +115,13 @@ class View extends \Jiny\View\Process
                 $html->clearLayout(); // 재귀호출 방지를 위해서 삭제합니다.
 
                 // 레이아웃의 머리말을 분리합니다.
-                $doc = $this->FrontMatter->parser($body);
-                $html->_body = str_replace("{{- content -}}", $html->_body, $doc['content']);
+                // $doc = $this->FrontMatter->parser($body);
+                $f = \jiny\frontMatter($body);
+                // $html->_body = str_replace("{{- content -}}", $html->_body, $doc['content']);
+                $html->_body = str_replace("{{- content -}}", $html->_body, $f->getContent());
 
-                $html->appendViewData("page", $doc['data']);                
+                // $html->appendViewData("page", $doc['data']);
+                $html->appendViewData("page", $f->getData());  
 
                 // 재확장 여부 검사.
                 if ($html->isLayout()) $this->extendLayout($html);
@@ -170,7 +163,7 @@ class View extends \Jiny\View\Process
             case 'md':
                 //echo "md 파일을 출력합니다.<br>";
                 // 내용을 마크다운 -> html로 변환합니다.
-                $this->markDown($viewHtml);
+                $viewHtml->_body = \jiny\markdown($viewHtml->_body);
                 break;
 
             case 'docx':
@@ -178,17 +171,6 @@ class View extends \Jiny\View\Process
                 break;    
         }
 
-        return $this;
-    }
-
-
-    // _Body 마크다운 변환을 처리합니다.
-    public function markDown($viewHtml)
-    {
-        // 마크다운 변환
-        // 컴포저 패키지 참고
-        $Parsedown = new \Parsedown();
-        $viewHtml->_body = $Parsedown->text($viewHtml->_body);
         return $this;
     }
 

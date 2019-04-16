@@ -26,6 +26,15 @@ class ViewHtml
         $this->_data = $data;
     }
 
+    public function getData()
+    {
+        return $this->_data;
+    }
+
+    public function setData($data)
+    {
+        $this->_data = $data;
+    }
 
     /**
      * 본문을 설정합니다.
@@ -35,11 +44,20 @@ class ViewHtml
         $this->_body = $body;
     }
 
+    public function setContent($body)
+    {
+        $this->_body = $body;
+    }
 
     /**
      * 본문을 반환합니다.
      */
     public function getBody()
+    {
+        return $this->_body;
+    }
+ 
+    public function getContent()
     {
         return $this->_body;
     }

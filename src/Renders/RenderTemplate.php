@@ -13,12 +13,14 @@ use \Jiny\Core\Registry\Registry;
 use Liquid\Template;
 use Symfony\Component\Filesystem\Filesystem;
 
+/**
+ * 템플릿 랜더링 체인패턴
+ */
 class RenderTemplate extends \Jiny\View\Render
 {
     // 실제적인 동작
     protected function render($body)
     {
-        //echo "템플릿을 랜더링 합니다.<br>";
         // 템플릿 인스턴스를 레지스트리에 추가합니다.
         $this->Template = Registry::create(\Jiny\Template\Template::class, "Template", $this);
         if ($this->Template) {
