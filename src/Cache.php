@@ -30,7 +30,7 @@ class Cache
      */
     public function is()
     {
-        return conf("ENV.Tamplate.Cache");
+        return \jiny\conf("ENV.Tamplate.Cache");
     }
 
 

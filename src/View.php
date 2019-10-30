@@ -76,7 +76,6 @@ class View extends \Jiny\View\Process
             // 머리말 layout 설정값에 따라서 재귀적으로 결합합니다.
             $this->extendLayout($viewHtml);           
 
-
             // 케쉬 작업을 체크합니다.          
             if(!$this->File->Cache->isUpdate()){
 
@@ -115,13 +114,10 @@ class View extends \Jiny\View\Process
                 $html->clearLayout(); // 재귀호출 방지를 위해서 삭제합니다.
 
                 // 레이아웃의 머리말을 분리합니다.
-                // $doc = $this->FrontMatter->parser($body);
                 $f = \jiny\frontMatter($body);
-                // $html->_body = str_replace("{{- content -}}", $html->_body, $doc['content']);
                 $html->_body = str_replace("{{- content -}}", $html->_body, $f->getContent());
 
-                // $html->appendViewData("page", $doc['data']);
-                $html->appendViewData("page", $f->getData());  
+                $html->appendViewData(self::FRONTMATTER, $f->getData());  
 
                 // 재확장 여부 검사.
                 if ($html->isLayout()) $this->extendLayout($html);
@@ -138,7 +134,7 @@ class View extends \Jiny\View\Process
      */
     public function viewLayout($name)
     {
-        $layout = conf("ENV.path.layout");
+        $layout = \jiny\conf("ENV.path.layout");
         $path = ROOT.DS.$layout.DS;
         $filename = $name.".htm";
         if (file_exists($path.$filename)) {
@@ -225,7 +221,7 @@ class View extends \Jiny\View\Process
         }
 
         // 설정파일을 뷰데이터에 결합합니다.
-        $cfgData = conf();
+        $cfgData = \jiny\conf();
         foreach ($cfgData as $key => $value) {
             $this->_data[$key] = $value;
         }

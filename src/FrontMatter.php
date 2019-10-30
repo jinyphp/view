@@ -57,7 +57,7 @@ class FrontMatter
      */
     public function isDataFile()
     {
-        $path = ROOT.conf('ENV.path.pages');
+        $path = ROOT.\jiny\conf('ENV.path.pages');
       
         $dataYMAL = \Jiny\Core\Base\Path::append($path, $this->view_file);
         if(file_exists($dataYMAL.".yaml")) {
