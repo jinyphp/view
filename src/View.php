@@ -64,7 +64,7 @@ class View extends \Jiny\View\Process
         if ($body = $this->File->read($viewName)) {
 
             // 문서에서 머리말을 분리합니다.
-            $f = \jiny\frontMatter($body);
+            $f = \Jiny\frontMatter($body);
             $viewHtml->setContent($f->getContent());
             $viewHtml->appendViewData(self::FRONTMATTER, $f->getData());
 

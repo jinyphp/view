@@ -54,11 +54,11 @@ class ViewFile
      */
     public function getPath()
     {
-        if ($this->_path = \jiny\conf("site.view_path")) {
+        if ($this->_path = \Jiny\conf("site.view_path")) {
             // site 설정의 값을 우선 처리합니다.
         } else {
             // 기본값는 환경변수 설정값 입니다.
-            $this->_path = \jiny\conf("ENV.path.pages");
+            $this->_path = \Jiny\conf("ENV.path.pages");
         }
 
         // 경로를 운영체제에 맞게 수정합니다.
@@ -113,7 +113,7 @@ class ViewFile
     {
         // Indexs
         // 우선순위 설정으로 반복 검색을 합니다.
-        $indexs = \jiny\conf("ENV.Resource.Indexs");     
+        $indexs = \Jiny\conf("ENV.Resource.Indexs");     
     
         // 입력한 URL에 해당하는 index 파일이 있는지를 검사합니다.
         // index 파일은 모든 조건에서 우선 처리됩니다.

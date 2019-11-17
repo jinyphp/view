@@ -19,8 +19,8 @@ class RenderTheme extends \Jiny\View\Render
     protected function render($body)
     {
         // 테마처리
-        if($theme = \jiny\conf("site.theme")) {
-            \jiny\theme($body);
+        if($theme = \Jiny\conf("site.theme")) {
+            \Jiny\theme($body);
         } 
     }
 
