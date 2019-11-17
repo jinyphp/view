@@ -10,6 +10,12 @@
 namespace Jiny;
 use \Jiny\Core\Registry\Registry;
 
+require "Resource.php";
+
+
+
+
+
 if (! function_exists('view')) {
     /**
      * 뷰를 생성하고 출력합니다.
