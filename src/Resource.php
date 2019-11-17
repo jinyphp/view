@@ -17,6 +17,7 @@ class Resource
         $this->path = $path;
     }
 
+    private $resourceExist;
     public function init($resource="Resource", $view="View")
     {
         if (!is_dir($resource)) {
@@ -27,6 +28,7 @@ class Resource
             mkdir($resource.DIRECTORY_SEPARATOR.$view);
         }
         
+        $this->resourceExist = true;
         return $this;
     }
 

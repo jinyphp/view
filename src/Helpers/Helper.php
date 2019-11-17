@@ -12,14 +12,10 @@ use \Jiny\Core\Registry\Registry;
 
 require "Resource.php";
 
-
-
-
-
+/**
+ * 뷰를 생성하고 출력합니다.
+ */
 if (! function_exists('view')) {
-    /**
-     * 뷰를 생성하고 출력합니다.
-     */
     function view($viewName=Null, $data=[], $path=NULL) {
 
         $view = Registry::create(\Jiny\View\View::class, "View");
